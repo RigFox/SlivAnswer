@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">SlivAnswer</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="list">List</string>
+    <string name="light">Light</string>
+    <string name="title_activity_game">Game</string>
+</resources>

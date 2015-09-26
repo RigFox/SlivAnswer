@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="slivWord">
+        <item>Эльмира</item>
+        <item>Чарли Чаплин</item>
+        <item>Азамат</item>
+        <item>Баян</item>
+        <item>Камера</item>
+        <item>Слив</item>
+        <item>Саттор Байзаевич</item>
+        <item>Ильнур Сабитович</item>
+        <item>СиБГУ</item>
+    </string-array>
+</resources>
