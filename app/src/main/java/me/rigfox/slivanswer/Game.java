@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,10 +28,13 @@ public class Game {
 
     TextView screenText;
     TextView timerText;
+
     Sensors sensors;
     Timer timer;
     Activity activity;
     RelativeLayout body;
+
+    boolean revertFlag;
 
     int status;
     int k;
@@ -38,7 +42,7 @@ public class Game {
     int lastStatus;
     int lastK;
 
-    int gametimer;
+    int gameTimer;
 
     Game(TextView textView, Sensors sens, Activity act) {
         screenText = textView;
@@ -51,9 +55,7 @@ public class Game {
         slivList = new ArrayList<>();
 
         String[] slivWords = activity.getResources().getStringArray(R.array.slivWord);
-        for(int i = 0; i < slivWords.length; i++) {
-            slivList.add(slivWords[i]);
-        }
+        Collections.addAll(slivList, slivWords);
 
         slivList = shuffle(slivList);
 
@@ -68,16 +70,18 @@ public class Game {
         timer.schedule(task, 0, 1000);
     }
 
-    public void initgame() {
+    public void initGame() {
         if (k > 0)  {
             screenText.setText(String.format("Приготовились %d", k));
             k--;
         } else {
             k = 0;
-            gametimer = 60;
+            gameTimer = 60;
 
             status = SHOW_WORD;
             currentWordIndex = 0;
+
+            revertFlag = false;
 
             timer.cancel();
 
@@ -87,14 +91,14 @@ public class Game {
         }
     }
 
-    public void gameupdate() {
+    public void gameUpdate() {
         k++;
 
         if (k % 10 == 0) {
-            timerText.setText(String.format("До слива: %d", gametimer));
-            gametimer--;
+            timerText.setText(String.format("До слива: %d", gameTimer));
+            gameTimer--;
         }
-        if (gametimer < 1) {
+        if (gameTimer < 1) {
             status = FINISH;
         }
 
@@ -108,17 +112,23 @@ public class Game {
             case WAIT:
                 int screenPosition = sensors.getScreenPosition();
 
-                if (screenPosition == Sensors.ScreenUP) {
-                    lastStatus = SUCCESS;
-                    status = SHOW_RESULT;
+                if (screenPosition == Sensors.ScreenFace) {
+                    revertFlag = true;
                 }
-                if (screenPosition == Sensors.ScreenDown) {
-                    lastStatus = FAIL;
-                    status = SHOW_RESULT;
+                if (revertFlag) {
+                    if (screenPosition == Sensors.ScreenUP) {
+                        lastStatus = SUCCESS;
+                        status = SHOW_RESULT;
+                    }
+                    if (screenPosition == Sensors.ScreenDown) {
+                        lastStatus = FAIL;
+                        status = SHOW_RESULT;
+                    }
                 }
                 break;
             case SHOW_RESULT:
                 lastK = k;
+                revertFlag = false;
 
                 if (lastStatus == SUCCESS) {
                     screenText.setText("Угадано!");
@@ -159,7 +169,7 @@ public class Game {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    initgame();
+                    initGame();
                 }
             });
         }
@@ -171,7 +181,7 @@ public class Game {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    gameupdate();
+                    gameUpdate();
                 }
             });
         }
