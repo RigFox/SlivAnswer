@@ -17,4 +17,9 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(MainActivity.this, GameActivity.class);
         startActivity(intent);
     }
+
+    public void toEditorScreen(View v) {
+        Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+        startActivity(intent);
+    }
 }

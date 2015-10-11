@@ -36,4 +36,13 @@
         android:layout_centerHorizontal="true"
         android:longClickable="false"
         android:onClick="toGameScreen" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Редактор"
+        android:id="@+id/startEditor"
+        android:layout_below="@+id/startButton"
+        android:layout_centerHorizontal="true"
+        android:onClick="toEditorScreen" />
 </RelativeLayout>

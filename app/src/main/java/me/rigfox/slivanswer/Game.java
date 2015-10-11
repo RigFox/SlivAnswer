@@ -1,7 +1,9 @@
 package me.rigfox.slivanswer;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Vibrator;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,6 +23,13 @@ public class Game {
 
     private static final int SUCCESS = 27;
     private static final int FAIL = 389;
+
+    private static final int VIBRATE_SHORT = 200;
+    private static final int VIBRATE_MID = 300;
+    private static final int VIBRATE_LONG = 500;
+
+
+    Vibrator vibrator;
 
     ArrayList<String> slivList;
 
@@ -44,18 +53,27 @@ public class Game {
 
     int gameTimer;
 
-    Game(TextView textView, Sensors sens, Activity act) {
+    Game(TextView textView, Sensors sens, Vibrator vibrator, Intent intent, Activity act) {
         screenText = textView;
         sensors = sens;
         activity = act;
+
+        this.vibrator = vibrator;
 
         body = (RelativeLayout) activity.findViewById(R.id.screenbody);
         timerText = (TextView) activity.findViewById(R.id.timerView);
 
         slivList = new ArrayList<>();
 
-        String[] slivWords = activity.getResources().getStringArray(R.array.slivWord);
-        Collections.addAll(slivList, slivWords);
+        ArrayList<String> intentStrings = intent.getStringArrayListExtra("GameWords");
+
+        String[] defaultWords = activity.getResources().getStringArray(R.array.slivWord);
+
+        if (intentStrings == null) {
+            Collections.addAll(slivList, defaultWords);
+        } else {
+            slivList = intentStrings;
+        }
 
         slivList = shuffle(slivList);
 
@@ -84,6 +102,8 @@ public class Game {
             revertFlag = false;
 
             timer.cancel();
+
+            vibrator.vibrate(VIBRATE_MID);
 
             timer = new Timer();
             TimerTask task = new UpdateTimer();
@@ -130,6 +150,8 @@ public class Game {
                 lastK = k;
                 revertFlag = false;
 
+                vibrator.vibrate(VIBRATE_SHORT);
+
                 if (lastStatus == SUCCESS) {
                     screenText.setText("Угадано!");
                     body.setBackgroundColor(Color.GREEN);
@@ -143,7 +165,7 @@ public class Game {
                 status = SHOW_RESULT_WAIT;
                 break;
             case SHOW_RESULT_WAIT:
-                if (k-lastK > 20) {
+                if (k-lastK > 15) {
                     if (slivList.size()-1 == currentWordIndex) {
                         status = FINISH;
                     } else {
@@ -153,6 +175,8 @@ public class Game {
                 }
                 break;
             case FINISH:
+                vibrator.vibrate(VIBRATE_LONG);
+
                 activity.setContentView(R.layout.result);
                 ResultAdapter resultAdapter = new ResultAdapter(activity.getApplicationContext(), resultList);
 

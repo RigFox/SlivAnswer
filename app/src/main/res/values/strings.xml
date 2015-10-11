@@ -7,4 +7,5 @@
     <string name="list">List</string>
     <string name="light">Light</string>
     <string name="title_activity_game">Game</string>
+    <string name="title_activity_editor">EditorActivity</string>
 </resources>
